@@ -654,7 +654,9 @@ const legalPages = {
 function LegalPage({ kind, go }) {
   const page = legalPages[kind];
   return (
-    <main className="legal-page">
+    <>
+      <a className="skip-link" href="#main-content">Перейти к содержимому</a>
+      <main className="legal-page" id="main-content">
       <section className="legal-hero reveal">
         <button className="back-link" onClick={() => go("home")}>
           <ChevronLeft /> На главную
@@ -673,7 +675,8 @@ function LegalPage({ kind, go }) {
           </section>
         ))}
       </article>
-    </main>
+      </main>
+    </>
   );
 }
 
@@ -5035,7 +5038,17 @@ function Onboarding({ go }) {
   );
 }
 export default function App() {
-  const [page, setPage] = useState("home"),
+  const resolveHashPage = () => {
+    const hash = decodeURIComponent(window.location.hash.slice(1));
+    const knownPublicPages = [
+      "home", "product", "how", "quality", "pricing", "journal",
+      "login", "signup", "onboarding", "app", "privacy", "terms", "payments",
+    ];
+    return knownPublicPages.includes(hash) || /^journal\/\d+$/.test(hash)
+      ? hash
+      : "home";
+  };
+  const [page, setPage] = useState(resolveHashPage),
     [menu, setMenu] = useState(false);
   useEffect(() => {
     const onScroll = () =>
@@ -5047,7 +5060,13 @@ export default function App() {
     addEventListener("scroll", onScroll);
     return () => removeEventListener("scroll", onScroll);
   }, [page]);
+  useEffect(() => {
+    const onHashChange = () => setPage(resolveHashPage());
+    addEventListener("hashchange", onHashChange);
+    return () => removeEventListener("hashchange", onHashChange);
+  }, []);
   const go = (x) => {
+    if (window.location.hash.slice(1) !== x) window.location.hash = x;
     setPage(x);
     setMenu(false);
     scrollTo({ top: 0, behavior: "smooth" });
@@ -5063,6 +5082,7 @@ export default function App() {
     : null;
   return (
     <>
+      <a className="skip-link" href="#main-content">Перейти к содержимому</a>
       <div className="ambient a" />
       <div className="ambient b" />
       <Header go={go} setMenu={setMenu} />
@@ -5086,11 +5106,11 @@ export default function App() {
         </div>
       )}
       {article ? (
-        <JournalArticle article={article} go={go} />
+        <div id="main-content"><JournalArticle article={article} go={go} /></div>
       ) : page === "home" ? (
-        <Landing go={go} />
+        <div id="main-content"><Landing go={go} /></div>
       ) : (
-        <PublicPage kind={page} go={go} />
+        <div id="main-content"><PublicPage kind={page} go={go} /></div>
       )}
       <footer>
         <Logo go={go} />

@@ -8241,6 +8241,19 @@ footer {
 }
 
 /* Legal drafts */
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 1000;
+  transform: translateY(-180%);
+  padding: 11px 15px;
+  background: #77eee4;
+  color: #061417;
+  font: 700 13px/1 Manrope, Arial, sans-serif;
+  transition: transform .18s ease;
+}
+.skip-link:focus { transform: translateY(0); outline: 2px solid #ffffff; outline-offset: 3px; }
 .legal-page { width: min(1120px, calc(100% - 48px)); margin: 0 auto; padding: 88px 0 68px; }
 .legal-hero { max-width: 780px; padding: 54px 0 44px; }
 .legal-hero > small, .legal-hero > em { display: block; color: #75e5db; font: 700 11px/1.2 Manrope, Arial, sans-serif; letter-spacing: 1.6px; font-style: normal; }
