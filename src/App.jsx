@@ -1238,6 +1238,7 @@ function AppShell({ go }) {
     ["published", Globe2, "Публикации"],
     ["agents", Sparkles, "ИИ-агенты"],
     ["reports", BarChart3, "Аналитика"],
+    ["subscription", ShieldCheck, "Подписка"],
   ];
   const addRequest = async (brief) => {
     try {
@@ -1377,6 +1378,8 @@ function AppShell({ go }) {
           />
         ) : tab === "agents" ? (
           <AgentsBoard requests={allRequests} loading={loading} />
+        ) : tab === "subscription" ? (
+          <SubscriptionStatus go={go} createdCount={allRequests.length} />
         ) : (
           <Placeholder tab={tab} setTab={setTab} />
         )}
@@ -1397,6 +1400,64 @@ function AppShell({ go }) {
         )}
       </section>
     </main>
+  );
+}
+
+function SubscriptionStatus({ go, createdCount }) {
+  const [selectedPlan, setSelectedPlan] = useState("growth");
+  const plans = {
+    start: { name: "Старт", limit: 30, price: "4 950 ₽", description: "Для одного сайта и первого регулярного потока." },
+    growth: { name: "Рост", limit: 50, price: "12 450 ₽", description: "Для стабильного выпуска материалов каждый месяц." },
+    scale: { name: "Масштаб", limit: 150, price: "24 950 ₽", description: "Для нескольких направлений и большой редакционной нагрузки." },
+  };
+  const plan = plans[selectedPlan];
+  const used = Math.min(plan.limit, 18 + createdCount);
+  const remaining = Math.max(0, plan.limit - used);
+  const progress = Math.round((used / plan.limit) * 100);
+  return (
+    <section className="subscription-page reveal shown">
+      <div className="subscription-head">
+        <div>
+          <small>ДОСТУП И ЛИМИТЫ</small>
+          <h2>Подписка и объём
+            <br /><em>контент-потока.</em>
+          </h2>
+          <p>Здесь будет видно, сколько статей доступно в текущем периоде, когда нужно продлить доступ и какой тариф выбран.</p>
+        </div>
+        <span className="subscription-draft">ДЕМО-ИНТЕРФЕЙС</span>
+      </div>
+      <section className="subscription-notice">
+        <ShieldCheck size={18} />
+        <p><b>Оплата и лимиты пока не подключены.</b> Значения ниже показывают будущую логику кабинета и не ограничивают создание материалов в текущей beta-версии.</p>
+      </section>
+      <div className="subscription-grid">
+        <article className="subscription-card plan-card">
+          <small>ТЕКУЩИЙ ТАРИФ</small>
+          <div className="plan-card-title"><b>{plan.name}</b><span>{plan.price} / месяц</span></div>
+          <p>{plan.description}</p>
+          <div className="period-line"><span><i /> Расчётный период</span><b>01–30 ноября</b></div>
+          <div className="period-line"><span><i /> Следующее продление</span><b>30 ноября 2026</b></div>
+          <button className="ghost" onClick={() => go("pricing")}>Посмотреть все тарифы <ArrowRight size={15} /></button>
+        </article>
+        <article className="subscription-card usage-card">
+          <small>СТАТЬИ В ЭТОМ МЕСЯЦЕ</small>
+          <div className="usage-numbers"><b>{used}</b><span>из {plan.limit}</span><em>{remaining} осталось</em></div>
+          <div className="usage-meter" aria-label={`Использовано ${used} из ${plan.limit} статей`}><i style={{ width: `${progress}%` }} /></div>
+          <div className="usage-caption"><span>Использовано {progress}%</span><span>Лимит обновится после продления</span></div>
+          <p>В будущем лимит будет проверяться перед запуском новой статьи, а остаток и история периодов будут рассчитываться по подтверждённым платежам.</p>
+        </article>
+      </div>
+      <section className="subscription-plans" aria-label="Демонстрация выбора тарифа">
+        <div><small>СЦЕНАРИЙ ВЫБОРА</small><h3>Выберите объём на следующий месяц.</h3></div>
+        <div className="subscription-plan-options">
+          {Object.entries(plans).map(([id, item]) => <button key={id} className={selectedPlan === id ? "selected" : ""} onClick={() => setSelectedPlan(id)}><span><b>{item.name}</b><em>{item.limit} статей / месяц</em></span><strong>{item.price}</strong>{selectedPlan === id && <Check size={17} />}</button>)}
+        </div>
+      </section>
+      <section className="subscription-next">
+        <div><small>ЧТО ПОЯВИТСЯ ПОСЛЕ ПОДКЛЮЧЕНИЯ ОПЛАТЫ</small><b>Оплата через ЮKassa, активация доступа по webhook, история платежей и автоматический учёт статей.</b></div>
+        <button className="cta" onClick={() => go("pricing")}>К тарифам <ArrowRight /></button>
+      </section>
+    </section>
   );
 }
 const agentStages = [
