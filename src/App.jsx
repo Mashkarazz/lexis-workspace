@@ -4967,73 +4967,75 @@ function Auth({ mode, go }) {
   );
 }
 function Onboarding({ go }) {
-  const [step, setStep] = useState(0),
-    [selected, setSelected] = useState(null);
+  const [step, setStep] = useState(0);
+  const [data, setData] = useState({
+    website: "", niche: "", products: "", audience: "", competitors: "",
+    style: "expert", restrictions: "", objective: "leads",
+  });
   const screens = [
-    {
-      title: "Для кого вы создаёте контент?",
-      lead: "Это поможет LEXIS правильно собрать первый бриф.",
-      options: [
-        ["own", "Для своего бизнеса"],
-        ["agency", "Для клиентов агентства"],
-        ["editorial", "Для редакционного проекта"],
-        ["explore", "Пока изучаю"],
-      ],
-    },
-    {
-      title: "Какой язык нужен первым?",
-      lead: "Вы сможете добавить второй язык позднее.",
-      options: [
-        ["ru", "Русский"],
-        ["en", "English"],
-        ["both", "Русский и English"],
-      ],
-    },
-    {
-      title: "Первый поток уже рядом.",
-      lead: "Создайте заявку сейчас или сначала посмотрите рабочее пространство.",
-      options: [
-        ["create", "Создать первый материал"],
-        ["explore", "Открыть обзор"],
-      ],
-    },
+    { key: "website", title: "Начнём с вашего сайта.", lead: "Укажите адрес сайта или страницы, для которой будет работать контент. Это поможет собрать первый бриф и связать будущие статьи с вашим продуктом.", label: "Адрес сайта", placeholder: "https://example.ru", type: "input", optional: true },
+    { key: "niche", title: "В какой нише вы работаете?", lead: "Опишите сферу простыми словами. Например: голосовые AI-агенты для отдела продаж, стоматология, бухгалтерия для малого бизнеса.", label: "Ниша и специализация", placeholder: "Чем занимается ваша компания?", type: "textarea" },
+    { key: "products", title: "Что вы предлагаете клиентам?", lead: "Перечислите основные продукты, услуги или направления. В будущем это станет основой для тематических кластеров и внутренних ссылок.", label: "Продукты и услуги", placeholder: "Например: внедрение AI-агентов, аналитика звонков, интеграции с CRM", type: "textarea" },
+    { key: "audience", title: "Для кого вы пишете?", lead: "Опишите будущего читателя и его задачу. Чем точнее контекст, тем полезнее будут темы и язык статей.", label: "Аудитория", placeholder: "Например: руководители отделов продаж в B2B-компаниях, которым нужно обработать больше заявок", type: "textarea" },
+    { key: "competitors", title: "Кого стоит учитывать в анализе?", lead: "Добавьте конкурентов или сайты, на которые ориентируется ваша аудитория. Можно пропустить и вернуться к этому позже.", label: "Конкуренты и ориентиры", placeholder: "example-competitor.ru, ещё один сайт", type: "textarea", optional: true },
+    { key: "style", title: "Как должен звучать контент?", lead: "Выберите исходную тональность. На следующем этапе вы сможете добавить примеры, термины и редакционные правила.", type: "options", options: [["expert", "Экспертно и спокойно", "Понятно объясняем сложное без канцелярита"], ["business", "Деловой стиль", "Коротко, предметно, с фокусом на решение"], ["friendly", "Дружелюбно и доступно", "Разговариваем с читателем на понятном языке"]] },
+    { key: "restrictions", title: "Есть важные ограничения?", lead: "Укажите нежелательные темы, запрещённые обещания, чувствительные формулировки или обязательные правила бренда. Это защищает качество контента до запуска потока.", label: "Ограничения и редакционные правила", placeholder: "Например: не обещать гарантированный результат, не сравнивать с конкретными конкурентами", type: "textarea", optional: true },
   ];
   const screen = screens[step];
+  const required = !screen.optional && (screen.type === "options" ? Boolean(data[screen.key]) : Boolean(data[screen.key].trim()));
+  const update = (key, value) => setData((current) => ({ ...current, [key]: value }));
+  const summary = [
+    ["Сайт", data.website || "Добавите позже"], ["Ниша", data.niche], ["Продукты", data.products],
+    ["Аудитория", data.audience], ["Конкуренты", data.competitors || "Добавите позже"],
+    ["Тональность", { expert: "Экспертно и спокойно", business: "Деловой стиль", friendly: "Дружелюбно и доступно" }[data.style]],
+    ["Ограничения", data.restrictions || "Не указаны"],
+  ];
   return (
     <main className="auth-page onboarding">
       <div className="auth-top">
         <Logo go={go} />
-        <small>ONBOARDING · {step + 1}/3</small>
+        <small>ONBOARDING · {step + 1}/{screens.length}</small>
       </div>
-      <section className="onboarding-card">
-        <small>ДОБРО ПОЖАЛОВАТЬ В LEXIS</small>
-        <h1>{screen.title}</h1>
-        <p>{screen.lead}</p>
-        <div className="onboarding-options">
-          {screen.options.map(([id, label]) => (
-            <button
-              className={selected === id ? "picked" : ""}
-              key={id}
-              onClick={() => setSelected(id)}
-            >
-              <span>{label}</span>
-              {selected === id && <Check />}
-            </button>
-          ))}
+      {step < screens.length && <section className="onboarding-card" aria-labelledby="onboarding-title">
+        <div className="onboarding-progress" aria-label={`Шаг ${step + 1} из ${screens.length}`}>
+          {screens.map((item, index) => <i className={index <= step ? "active" : ""} key={item.key} />)}
         </div>
+        <small>ПЕРВЫЙ КОНТЕНТ-ПЛАН</small>
+        <h1 id="onboarding-title">{screen.title}</h1>
+        <p>{screen.lead}</p>
+        {screen.type === "options" ? (
+          <div className="onboarding-options">
+            {screen.options.map(([id, label, description]) => (
+              <button className={data.style === id ? "picked" : ""} key={id} onClick={() => update("style", id)}>
+                <span><b>{label}</b><em>{description}</em></span>{data.style === id && <Check />}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <label className="onboarding-field">
+            <span>{screen.label}{screen.optional && <em>необязательно</em>}</span>
+            {screen.type === "textarea" ? <textarea autoFocus value={data[screen.key]} placeholder={screen.placeholder} onChange={(event) => update(screen.key, event.target.value)} /> : <input autoFocus type="url" value={data[screen.key]} placeholder={screen.placeholder} onChange={(event) => update(screen.key, event.target.value)} />}
+          </label>
+        )}
         <div className="onboarding-actions">
-          <button className="ghost" onClick={() => go("app")}>
-            Пропустить
-          </button>
+          {step > 0 ? <button className="ghost" onClick={() => setStep((current) => current - 1)}>Назад</button> : <button className="ghost" onClick={() => go("app")}>Пропустить</button>}
           <button
             className="cta"
-            disabled={!selected}
-            onClick={() => (step === 2 ? go("app") : setStep((x) => x + 1))}
+            disabled={!required}
+            onClick={() => step === screens.length - 1 ? setStep(screens.length) : setStep((current) => current + 1)}
           >
-            {step === 2 ? "Открыть пространство" : "Продолжить"} <ArrowRight />
+            Продолжить <ArrowRight />
           </button>
         </div>
-      </section>
+      </section>}
+      {step === screens.length && (
+        <section className="onboarding-card onboarding-summary">
+          <small>ПРОВЕРЬТЕ ОСНОВУ</small><h1>Контекст для первого потока готов.</h1>
+          <p>Это демонстрационная сводка. В публичной beta-версии она не сохраняет данные на сервере и не создаёт отдельное рабочее пространство компании.</p>
+          <dl>{summary.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
+          <div className="onboarding-actions"><button className="ghost" onClick={() => setStep(screens.length - 1)}>Изменить</button><button className="cta" onClick={() => go("app")}>Открыть демо-кабинет <ArrowRight /></button></div>
+        </section>
+      )}
     </main>
   );
 }
