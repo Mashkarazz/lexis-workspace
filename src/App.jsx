@@ -1267,7 +1267,19 @@ function AppShell({ go }) {
       const result = await pipelineApi.createRequestFromTopic(topic.slug);
       const row = requestRow(result.item);
       setLiveRequests((x) => [row, ...x.filter((item) => item.id !== row.id)]);
-      setQueue((x) => (x.includes(topic.slug) ? x : [...x, topic.slug]));
+      setQueue((x) =>
+        x.some((item) => item.slug === topic.slug)
+          ? x
+          : [
+              ...x,
+              {
+                requestId: row.id,
+                slug: topic.slug,
+                title: topic.h1 || topic.question,
+                status: "pending",
+              },
+            ],
+      );
       return row;
     }
     const brief = {
