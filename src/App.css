@@ -7062,6 +7062,186 @@ blockquote em {
 .pricing-cards article.featured {
   background: linear-gradient(145deg, #211d3a, #121724);
 }
+.pricing-intro {
+  max-width: 1120px;
+  margin: -72px auto 26px;
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  border: 1px solid #365461;
+  border-radius: 14px;
+  background: linear-gradient(105deg, #122a31, #121927);
+}
+.pricing-intro span {
+  flex: 0 0 auto;
+  color: #91e5de;
+  font: 10px "DM Mono";
+  letter-spacing: 1px;
+}
+.pricing-intro p {
+  max-width: 700px;
+  margin: 0;
+  color: #b5c6cb;
+  font-size: 13px;
+  line-height: 1.55;
+}
+.public-pricing .pricing-cards {
+  max-width: 1120px;
+  margin: 0 auto 18px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 13px;
+  align-items: stretch;
+}
+.public-pricing .pricing-cards article {
+  min-height: 482px;
+  padding: 26px 22px 22px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border-radius: 17px;
+  background: linear-gradient(145deg, #14242d, #0d151e);
+  transition: transform .24s ease, border-color .24s ease, box-shadow .24s ease;
+}
+.public-pricing .pricing-cards article:hover {
+  transform: translateY(-6px);
+  border-color: #75ded6;
+  box-shadow: 0 20px 42px #0005;
+}
+.public-pricing .pricing-cards article.featured {
+  border-color: #9388de;
+  background: radial-gradient(circle at 85% 6%, #7768c436, transparent 35%), linear-gradient(145deg, #242043, #131827);
+  box-shadow: 0 18px 44px #352d7033;
+}
+.public-pricing .pricing-cards article.custom-plan {
+  background: linear-gradient(145deg, #13222c, #111521);
+}
+.pricing-badge {
+  position: absolute;
+  top: -11px;
+  left: 21px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: #a69bf3;
+  color: #18152e;
+  font: 800 8px "DM Mono";
+  letter-spacing: .7px;
+}
+.public-pricing .pricing-cards h2 {
+  margin: 22px 0 4px;
+  color: #f0f5f6;
+  font-size: 28px;
+  letter-spacing: -1.4px;
+  white-space: nowrap;
+}
+.public-pricing .pricing-cards h2 em {
+  color: #9aaeb5;
+  font: 11px Manrope, Arial, sans-serif;
+  letter-spacing: 0;
+}
+.public-pricing .pricing-cards strong {
+  color: #83ddd5;
+  font-size: 12px;
+}
+.public-pricing .pricing-cards p {
+  min-height: 66px;
+  margin: 15px 0 17px;
+  color: #aebcc4;
+  font-size: 12px;
+  line-height: 1.55;
+}
+.public-pricing .pricing-cards ul {
+  display: grid;
+  gap: 10px;
+  min-height: 91px;
+  margin: 0 0 20px;
+  padding: 14px 0 0;
+  list-style: none;
+  border-top: 1px solid #ffffff14;
+}
+.public-pricing .pricing-cards li {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  color: #d0dadd;
+  font-size: 11px;
+  line-height: 1.35;
+}
+.public-pricing .pricing-cards li svg {
+  flex: 0 0 auto;
+  color: #7de0d8;
+}
+.public-pricing .pricing-cards .cta,
+.public-pricing .pricing-cards .ghost {
+  width: 100%;
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border-radius: 10px;
+}
+.public-pricing .pricing-cards .ghost {
+  padding: 13px 10px;
+  color: #cbe9e7;
+  border-color: #4d7a7b;
+  font-size: 11px;
+}
+.pricing-note {
+  max-width: 900px;
+  margin: 0 auto 112px;
+  text-align: center;
+  color: #8598a1;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.pricing-dialog-backdrop {
+  position: fixed;
+  z-index: 30;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: #050a10bd;
+  backdrop-filter: blur(8px);
+}
+.pricing-dialog {
+  width: min(100%, 440px);
+  padding: 32px;
+  position: relative;
+  border: 1px solid #52757a;
+  border-radius: 20px;
+  background: radial-gradient(circle at 94% 0, #6559a345, transparent 35%), #111b26;
+  box-shadow: 0 28px 85px #0009;
+}
+.pricing-dialog > small { color: #8ce3dc; font: 10px "DM Mono"; letter-spacing: 1px; }
+.pricing-dialog h2 { margin: 12px 0 7px; font-size: 35px; letter-spacing: -1.8px; }
+.pricing-dialog > p { color: #b8c6cb; font-size: 14px; line-height: 1.6; }
+.pricing-dialog-close { position: absolute; right: 16px; top: 16px; color: #b6c5c9; }
+.payment-preview {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px;
+  margin: 22px 0;
+  padding: 15px;
+  border: 1px solid #45636b;
+  border-radius: 12px;
+  background: #0e171f;
+}
+.payment-preview span { color: #f2f7f8; font-weight: 700; }
+.payment-preview b { color: #8ce2db; font-size: 12px; }
+.payment-preview em { grid-column: 1 / -1; color: #8e9ca3; font-size: 11px; font-style: normal; }
+.pricing-dialog .cta { width: 100%; justify-content: center; gap: 7px; }
+.pricing-dialog .dialog-note { margin: 13px 0 0; color: #82939a; font-size: 11px; text-align: center; }
+@media (max-width: 1000px) {
+  .public-pricing .pricing-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 700px) {
+  .pricing-intro { margin: -38px 20px 24px; padding: 17px; align-items: flex-start; flex-direction: column; gap: 9px; }
+  .public-pricing .pricing-cards { margin: 0 20px 16px; grid-template-columns: 1fr; }
+  .public-pricing .pricing-cards article { min-height: 0; }
+  .pricing-note { margin: 0 25px 72px; }
+}
 .journal-grid article {
   transition:
     transform 0.25s,

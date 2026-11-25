@@ -325,50 +325,48 @@ function Landing({ go }) {
       </section>
       <section className="plans reveal">
         <div>
-          <small>04 — ПЕРВЫЙ ПОТОК</small>
+          <small>04 — ТАРИФЫ И ЛИМИТЫ</small>
           <h2>
-            Запустите первую
+            Выберите темп
             <br />
-            серию статей.
+            для роста сайта.
           </h2>
         </div>
         <div className="plan-cards">
           <article>
-            <small>STARTER</small>
+            <small>СТАРТ</small>
             <strong>
-              Free <em>/ 7 days</em>
+              4 950 ₽ <em>/ месяц</em>
             </strong>
             <p>
-              Проверьте весь путь: от анализа ниши до первых готовых статей с
-              командой ИИ-агентов.
+              До 4 статей в месяц для первого регулярного контент-потока.
             </p>
             <ul>
               <li>
-                <Check /> До 5 статей в первом потоке
+                <Check /> SEO-анализ ниши
               </li>
               <li>
-                <Check /> SEO-анализ и контент-план
+                <Check /> Контент-план и очередь
               </li>
               <li>
-                <Check /> Проверка фактов и качества
+                <Check /> Полный цикл ИИ-агентов
               </li>
             </ul>
-            <button className="cta" onClick={() => go("signup")}>
-              Начать бесплатно <ArrowRight />
+            <button className="cta" onClick={() => go("pricing")}>
+              Посмотреть тарифы <ArrowRight />
             </button>
           </article>
           <article className="coming-plan">
-            <small>СКОРО</small>
+            <small>РОСТ · ОСНОВНОЙ ВЫБОР</small>
             <strong>
-              Pro <em>/ регулярный выпуск</em>
+              12 450 ₽ <em>/ месяц</em>
             </strong>
             <p>
-              Для команд, которым нужен стабильный объём: тариф зависит от
-              количества статей в месяц.
+              До 12 статей в месяц для стабильного SEO-продвижения.
             </p>
-            <span>
-              Уведомить о запуске <ArrowRight size={15} />
-            </span>
+            <button className="ghost" onClick={() => go("pricing")}>
+              Сравнить все тарифы <ArrowRight size={15} />
+            </button>
           </article>
         </div>
       </section>
@@ -616,6 +614,7 @@ function JournalArticle({ article, go }) {
 function PublicPage({ kind, go }) {
   let p = pages[kind];
   const [activeFeature, setActiveFeature] = useState(0);
+  const [selectedPlan, setSelectedPlan] = useState(null);
   const featureDetails = [
     {
       label: "SEO-АНАЛИЗ НИШИ",
@@ -816,28 +815,46 @@ function PublicPage({ kind, go }) {
         </section>
       )}
       {kind === "pricing" && (
-        <section className="pricing-cards reveal">
-          <article>
-            <small>STARTER</small>
-            <h2>Бесплатно</h2>
-            <p>
-              До 5 материалов, чтобы пройти путь от анализа ниши до первой серии
-              статей.
-            </p>
-            <button className="cta" onClick={() => go("app")}>
-              Начать <ArrowRight />
-            </button>
-          </article>
-          <article className="featured">
-            <small>TEAM</small>
-            <h2>Скоро</h2>
-            <p>
-              Для регулярного выпуска: стоимость зависит от количества статей в
-              месяц.
-            </p>
-            <button className="ghost">В лист ожидания</button>
-          </article>
-        </section>
+        <>
+          <section className="pricing-intro reveal">
+            <span>ВСЕ ТАРИФЫ ВКЛЮЧАЮТ SEO-АНАЛИЗ НИШИ</span>
+            <p>Темы, контент-план, работа команды ИИ-агентов, контроль качества и личный кабинет. Лимит обновляется каждый месяц после продления.</p>
+          </section>
+          <section className="pricing-cards reveal" aria-label="Тарифы LEXIS">
+            {[
+              { id: "start", name: "Старт", price: "4 950 ₽", volume: "до 4 статей в месяц", text: "Чтобы запустить регулярный SEO-контент для одного сайта.", points: ["SEO-анализ ниши", "Контент-план и очередь", "Полный цикл ИИ-агентов"] },
+              { id: "growth", name: "Рост", price: "12 450 ₽", volume: "до 12 статей в месяц", text: "Для бизнеса, которому нужен стабильный поток материалов.", points: ["Всё из тарифа «Старт»", "Приоритет в очереди", "Статусы и история статей"], featured: true },
+              { id: "scale", name: "Масштаб", price: "24 950 ₽", volume: "до 30 статей в месяц", text: "Для команд и агентств, которые ведут несколько направлений.", points: ["Всё из тарифа «Рост»", "Несколько контент-направлений", "Расширенные роли команды"] },
+              { id: "custom", name: "Индивидуальный", price: "По запросу", volume: "от 50 статей в месяц", text: "Для корпоративных команд, агентств и нестандартных процессов.", points: ["Несколько сайтов и проектов", "Индивидуальные правила", "Интеграции и сопровождение"], custom: true },
+            ].map((plan) => (
+              <article className={(plan.featured ? "featured " : "") + (plan.custom ? "custom-plan" : "")} key={plan.id}>
+                {plan.featured && <b className="pricing-badge">ОСНОВНОЙ ВЫБОР</b>}
+                <small>{plan.name.toUpperCase()}</small>
+                <h2>{plan.price}<em>{plan.custom ? "" : " / месяц"}</em></h2>
+                <strong>{plan.volume}</strong>
+                <p>{plan.text}</p>
+                <ul>{plan.points.map((point) => <li key={point}><Check size={15} />{point}</li>)}</ul>
+                <button className={plan.featured ? "cta" : "ghost"} onClick={() => setSelectedPlan(plan)}>
+                  {plan.custom ? "Обсудить тариф" : "Выбрать тариф"} <ArrowRight size={16} />
+                </button>
+              </article>
+            ))}
+          </section>
+          <p className="pricing-note reveal">Без автосписаний: вы самостоятельно продлеваете доступ каждый месяц. Оплата картой и СБП через ЮKassa будет доступна после запуска платёжного контура.</p>
+          {selectedPlan && (
+            <div className="pricing-dialog-backdrop" role="presentation" onMouseDown={() => setSelectedPlan(null)}>
+              <section className="pricing-dialog" role="dialog" aria-modal="true" aria-labelledby="plan-dialog-title" onMouseDown={(event) => event.stopPropagation()}>
+                <button className="pricing-dialog-close" onClick={() => setSelectedPlan(null)} aria-label="Закрыть"><X size={18} /></button>
+                <small>ВЫБРАН ТАРИФ</small>
+                <h2 id="plan-dialog-title">{selectedPlan.name}</h2>
+                <p>{selectedPlan.custom ? "Оставьте заявку — подготовим тариф под ваш объём и процессы." : `${selectedPlan.price} в месяц · ${selectedPlan.volume}.`}</p>
+                <div className="payment-preview"><span>ЮKassa</span><b>Карты · СБП</b><em>Подключаем оплату</em></div>
+                <button className="cta" onClick={() => go("signup")}>Продолжить к заявке <ArrowRight /></button>
+                <p className="dialog-note">Сейчас это предварительное оформление: доступ не будет списан автоматически.</p>
+              </section>
+            </div>
+          )}
+        </>
       )}
       {kind === "journal" && (
         <section className="journal-grid reveal">
