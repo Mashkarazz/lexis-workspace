@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1320" viewBox="0 0 1800 1320" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1800" y2="1320"><stop stop-color="#090D15"/><stop offset="1" stop-color="#11162A"/></linearGradient>
+    <radialGradient id="glow"><stop stop-color="#8CE4DE" stop-opacity=".26"/><stop offset="1" stop-color="#8CE4DE" stop-opacity="0"/></radialGradient>
+    <linearGradient id="mint" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#CEFFF9"/><stop offset="1" stop-color="#75DAD4"/></linearGradient>
+    <style>.num{font:600 12px Arial,sans-serif;letter-spacing:2px;fill:#8CE4DE}.title{font:600 22px Arial,sans-serif;fill:#F1F3F7}.hint{font:15px Arial,sans-serif;fill:#8995A6}.word{font:700 30px Arial,sans-serif;letter-spacing:-1.5px;fill:#F2F4F8}.rule{stroke:#29394D;stroke-width:1}</style>
+  </defs>
+  <rect width="1800" height="1320" fill="url(#bg)"/>
+  <circle cx="1610" cy="70" r="310" fill="#55428B" opacity=".13"/><circle cx="120" cy="1230" r="250" fill="#267C82" opacity=".1"/>
+  <text x="100" y="105" class="num">LEXIS / FOCUS SYSTEM / 10 DIRECTIONS</text>
+  <text x="100" y="166" class="title" style="font-size:45px;letter-spacing:-2.5px">Фокус без подложки: десять свободных знаков.</text>
+  <text x="100" y="210" class="hint">Все варианты живут самостоятельно — на шапке, favicon, иконке приложения и в motion.</text>
+
+  <!-- 1 -->
+  <g transform="translate(100 315)"><text class="num">01 / OPEN FOCUS</text><g transform="translate(125 105)"><circle r="88" stroke="#506174" stroke-width="2" stroke-dasharray="410 143" transform="rotate(-35)"/><circle r="49" stroke="#8A81B4" stroke-width="2" stroke-dasharray="220 88" transform="rotate(55)"/><circle r="12" fill="url(#mint)"/><circle r="72" fill="url(#glow)"/></g><text y="222" class="word">LEXIS<tspan fill="#8CE4DE">.</tspan></text><text y="253" class="hint">Открытый круг · ясный центр</text></g>
+  <!-- 2 -->
+  <g transform="translate(450 315)"><text class="num">02 / THREE ORBITS</text><g transform="translate(125 105)"><ellipse rx="97" ry="53" stroke="#8CE4DE" stroke-width="2" transform="rotate(-33)"/><ellipse rx="97" ry="53" stroke="#B9B2FF" stroke-width="2" transform="rotate(27)"/><circle r="53" stroke="#4D6073" stroke-width="2"/><circle r="11" fill="url(#mint)"/></g><text y="222" class="word">LEXIS<tspan fill="#8CE4DE">.</tspan></text><text y="253" class="hint">Три взгляда на один материал</text></g>
+  <!-- 3 -->
+  <g transform="translate(800 315)"><text class="num">03 / TWIN SIGNAL</text><g transform="translate(125 105)"><circle r="84" stroke="#526679" stroke-width="2"/><path d="M-84 0H-20M20 0H84" stroke="#B8B1FF" stroke-width="3" stroke-linecap="round"/><circle cx="-84" r="7" fill="#B8B1FF"/><circle cx="84" r="7" fill="#8CE4DE"/><circle r="13" fill="url(#mint)"/></g><text y="222" class="word">LEXIS<tspan fill="#8CE4DE">.</tspan></text><text y="253" class="hint">Сигналы сходятся к сути</text></g>
+  <!-- 4 -->
+  <g transform="translate(1150 315)"><text class="num">04 / ECLIPSE</text><g transform="translate(125 105)"><circle r="83" stroke="#536779" stroke-width="2"/><circle cx="26" cy="-25" r="55" stroke="#B8B1FF" stroke-width="2"/><circle r="11" fill="url(#mint)"/><path d="M-58 58L-40 40" stroke="#8CE4DE" stroke-width="3" stroke-linecap="round"/></g><text y="222" class="word">LEXIS<tspan fill="#8CE4DE">.</tspan></text><text y="253" class="hint">Проверка с другого угла</text></g>
+  <!-- 5 -->
+  <g transform="translate(100 675)"><text class="num">05 / CONCENTRIC</text><g transform="translate(125 105)"><circle r="87" stroke="#415367" stroke-width="2"/><circle r="61" stroke="#657487" stroke-width="2"/><circle r="35" stroke="#AFA8F7" stroke-width="2"/><circle r="10" fill="url(#mint)"/><circle r="55" fill="url(#glow)"/></g><text y="222" class="word">LEXIS<tspan fill="#8CE4DE">.</tspan></text><text y="253" class="hint">От шума к ясности</text></g>
+  <!-- 6 -->
+  <g transform="translate(450 675)"><text class="num">06 / ARC POINTS</text><g transform="translate(125 105)"><path d="M-79 48A92 92 0 0 1 0-88A92 92 0 0 1 79 48" stroke="#8CE4DE" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="-79" cy="48" r="8" fill="#B8B1FF"/><circle cx="0" cy="-88" r="8" fill="#8CE4DE"/><circle cx="79" cy="48" r="8" fill="#B8B1FF"/><circle r="11" fill="url(#mint)"/></g><text y="222" class="word">LEXIS<tspan fill="#8CE4DE">.</tspan></text><text y="253" class="hint">Три точки проверки вокруг идеи</text></g>
+  <!-- 7 -->
+  <g transform="translate(800 675)"><text class="num">07 / OFFSET CORE</text><g transform="translate(125 105)"><circle r="83" stroke="#56687A" stroke-width="2"/><circle cx="-17" cy="17" r="43" stroke="#B8B1FF" stroke-width="2"/><circle cx="-17" cy="17" r="11" fill="url(#mint)"/><circle cx="56" cy="-56" r="7" fill="#8CE4DE"/></g><text y="222" class="word">LEXIS<tspan fill="#8CE4DE">.</tspan></text><text y="253" class="hint">Смотреть чуть глубже центра</text></g>
+  <!-- 8 -->
+  <g transform="translate(1150 675)"><text class="num">08 / APERTURE</text><g transform="translate(125 105)"><path d="M0-86A86 86 0 0 1 74 43" stroke="#8CE4DE" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M0 86A86 86 0 0 1-74-43" stroke="#B8B1FF" stroke-width="4" fill="none" stroke-linecap="round"/><circle r="11" fill="url(#mint)"/><circle r="48" stroke="#465A6D" stroke-width="2"/></g><text y="222" class="word">LEXIS<tspan fill="#8CE4DE">.</tspan></text><text y="253" class="hint">Открытое окно в суть материала</text></g>
+  <!-- 9 -->
+  <g transform="translate(275 1035)"><text class="num">09 / HALO</text><g transform="translate(125 105)"><circle r="84" stroke="#8CE4DE" stroke-width="2" opacity=".7"/><circle r="68" stroke="#B8B1FF" stroke-width="2" opacity=".5"/><circle r="11" fill="url(#mint)"/><circle r="49" fill="url(#glow)"/></g><text y="222" class="word">LEXIS<tspan fill="#8CE4DE">.</tspan></text><text y="253" class="hint">Самый спокойный, почти ювелирный</text></g>
+  <!-- 10 -->
+  <g transform="translate(975 1035)"><text class="num">10 / ALIGN</text><g transform="translate(125 105)"><path d="M-85 0H85M0-85V85" stroke="#46586C" stroke-width="2"/><circle r="72" stroke="#B8B1FF" stroke-width="2"/><circle r="11" fill="url(#mint)"/><circle cx="-85" r="7" fill="#8CE4DE"/><circle cx="85" r="7" fill="#8CE4DE"/></g><text y="222" class="word">LEXIS<tspan fill="#8CE4DE">.</tspan></text><text y="253" class="hint">Выравнивание смысла и процесса</text></g>
+</svg>

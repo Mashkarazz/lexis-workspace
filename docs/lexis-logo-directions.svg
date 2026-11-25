@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1160" viewBox="0 0 1600 1160" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1600" y2="1160"><stop stop-color="#0A0E16"/><stop offset="1" stop-color="#121529"/></linearGradient>
+    <linearGradient id="aqua" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#C1FFF8"/><stop offset="1" stop-color="#79DCD7"/></linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <style>.card{fill:#121927;stroke:#344358;stroke-width:1.5}.k{font:600 14px Arial,sans-serif;letter-spacing:2px;fill:#8BE2DC}.t{font:600 30px Arial,sans-serif;fill:#F1F3F7}.d{font:18px Arial,sans-serif;fill:#A2AAB8}.word{font:700 38px Arial,sans-serif;letter-spacing:-2px;fill:#F4F6F9}.sub{font:15px Arial,sans-serif;fill:#7F8B9E}</style>
+  </defs>
+  <rect width="1600" height="1160" fill="url(#bg)"/>
+  <circle cx="1450" cy="20" r="300" fill="#534687" opacity=".16" filter="url(#glow)"/>
+  <circle cx="100" cy="1050" r="260" fill="#277C82" opacity=".11" filter="url(#glow)"/>
+  <text x="90" y="105" class="k">LEXIS / LOGO DIRECTIONS</text>
+  <text x="90" y="165" class="t" style="font-size:48px;letter-spacing:-3px">Выберите направление, а не финальный рисунок.</text>
+  <text x="90" y="210" class="d">Все варианты построены в текущем тёмном, редакционно‑технологичном стиле LEXIS.</text>
+
+  <g transform="translate(90 280)"><rect class="card" width="440" height="360" rx="8"/>
+    <text x="32" y="43" class="k">01 / FLOW MARK</text>
+    <g transform="translate(154 90)"><rect x="0" y="74" width="21" height="74" rx="4" fill="url(#aqua)"/><rect x="32" y="35" width="21" height="113" rx="4" fill="url(#aqua)"/><rect x="64" y="91" width="21" height="57" rx="4" fill="url(#aqua)"/><path d="M10 62C29 44 44 44 63 24C77 10 83 5 95 0" stroke="#BDB5FF" stroke-width="3" stroke-linecap="round"/></g>
+    <text x="32" y="258" class="word">LEXIS<tspan fill="#8BE2DC">.</tspan></text><text x="32" y="294" class="sub">Поток: бриф → факты → материал</text><text x="32" y="324" class="d">Эволюция нынешнего знака</text>
+  </g>
+
+  <g transform="translate(580 280)"><rect class="card" width="440" height="360" rx="8"/>
+    <text x="32" y="43" class="k">02 / L‑PATH</text>
+    <g transform="translate(162 87)" stroke="url(#aqua)" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"><path d="M15 12V132H115"/><circle cx="15" cy="12" r="8" fill="#BDB5FF" stroke="none"/><circle cx="115" cy="132" r="8" fill="#8BE2DC" stroke="none"/></g>
+    <text x="32" y="258" class="word">LEXIS<tspan fill="#8BE2DC">.</tspan></text><text x="32" y="294" class="sub">Маршрут и управляемое движение</text><text x="32" y="324" class="d">Компактный знак для приложения</text>
+  </g>
+
+  <g transform="translate(1070 280)"><rect class="card" width="440" height="360" rx="8"/>
+    <text x="32" y="43" class="k">03 / EDITORIAL ORBIT</text>
+    <g transform="translate(220 130)"><circle r="77" stroke="#8BE2DC" stroke-width="2" opacity=".8"/><ellipse rx="110" ry="54" stroke="#BDB5FF" stroke-width="2" transform="rotate(-37)"/><ellipse rx="132" ry="68" stroke="#5C93A1" stroke-width="2" transform="rotate(33)"/><circle r="13" fill="url(#aqua)" filter="url(#glow)"/><circle cx="94" cy="-40" r="5" fill="#BDB5FF"/><circle cx="-105" cy="36" r="5" fill="#8BE2DC"/></g>
+    <text x="32" y="258" class="word">LEXIS<tspan fill="#8BE2DC">.</tspan></text><text x="32" y="294" class="sub">Контролируемый редакционный цикл</text><text x="32" y="324" class="d">Самый эмоциональный и заметный</text>
+  </g>
+
+  <g transform="translate(90 700)"><rect class="card" width="440" height="360" rx="8"/>
+    <text x="32" y="43" class="k">04 / TRACE MARK</text>
+    <g transform="translate(112 120)"><path d="M0 48C38 -10 77 100 122 37S214 2 260 48" stroke="url(#aqua)" stroke-width="5" stroke-linecap="round"/><circle cx="0" cy="48" r="10" fill="#BDB5FF"/><circle cx="122" cy="37" r="10" fill="#8BE2DC"/><circle cx="260" cy="48" r="10" fill="#BDB5FF"/><path d="M260 48l-18-12m18 12l-18 12" stroke="#BDB5FF" stroke-width="4" stroke-linecap="round"/></g>
+    <text x="32" y="258" class="word">LEXIS<tspan fill="#8BE2DC">.</tspan></text><text x="32" y="294" class="sub">След от решения к результату</text><text x="32" y="324" class="d">Про provenance и проверяемость</text>
+  </g>
+
+  <g transform="translate(580 700)"><rect class="card" width="440" height="360" rx="8"/>
+    <text x="32" y="43" class="k">05 / LX MONOGRAM</text>
+    <g transform="translate(143 85)" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10v135h78" stroke="url(#aqua)" stroke-width="14"/><path d="M125 15l95 128M220 15l-95 128" stroke="#BDB5FF" stroke-width="13"/><circle cx="220" cy="15" r="7" fill="#8BE2DC" stroke="none"/></g>
+    <text x="32" y="258" class="word">LEXIS<tspan fill="#8BE2DC">.</tspan></text><text x="32" y="294" class="sub">Редакция встречается с технологией</text><text x="32" y="324" class="d">Самый международный и брендовый</text>
+  </g>
+
+  <g transform="translate(1070 700)"><rect class="card" width="440" height="360" rx="8"/>
+    <text x="32" y="43" class="k">МОЯ РЕКОМЕНДАЦИЯ</text>
+    <text x="32" y="120" class="t" style="font-size:34px;letter-spacing:-2px">Основной знак —</text><text x="32" y="164" class="t" style="font-size:34px;letter-spacing:-2px;fill:#8BE2DC">Flow Mark.</text>
+    <text x="32" y="220" class="d">Он сохраняет силу</text><text x="32" y="246" class="d">текущей версии и становится</text><text x="32" y="272" class="d">более уникальным.</text>
+    <path d="M35 318h355" stroke="#344358"/><text x="32" y="338" class="sub">Orbit можно оставить символом LEXIS FLOW</text>
+  </g>
+</svg>

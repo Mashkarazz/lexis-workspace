@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1100" viewBox="0 0 1600 1100" fill="none">
+  <defs>
+    <linearGradient id="bg3" x1="0" y1="0" x2="1600" y2="1100"><stop stop-color="#0A0D14"/><stop offset="1" stop-color="#12162A"/></linearGradient>
+    <linearGradient id="mint" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#C5FFF8"/><stop offset="1" stop-color="#78DCD6"/></linearGradient>
+    <filter id="soft"><feGaussianBlur stdDeviation="10" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <style>.card{fill:#111824;stroke:#334155;stroke-width:1.4}.ey{font:600 12px Arial,sans-serif;letter-spacing:2px;fill:#8CE4DE}.name{font:600 28px Arial,sans-serif;fill:#F2F4F8}.desc{font:16px Arial,sans-serif;fill:#9FA8B7}.word{font:700 34px Arial,sans-serif;letter-spacing:-1.6px;fill:#F5F6F9}</style>
+  </defs>
+  <rect width="1600" height="1100" fill="url(#bg3)"/>
+  <circle cx="1450" cy="30" r="250" fill="#55438C" opacity=".13" filter="url(#soft)"/>
+  <circle cx="80" cy="1060" r="240" fill="#237A80" opacity=".10" filter="url(#soft)"/>
+  <text x="90" y="96" class="ey">LEXIS / DOT‑BASED DIRECTIONS</text>
+  <text x="90" y="153" class="name" style="font-size:44px;letter-spacing:-2.5px">Не «три кружка». Пять собственных жестов из трёх точек.</text>
+  <text x="90" y="196" class="desc">Идея: знак должен считываться за секунду и жить в размере 20 пикселей.</text>
+
+  <g transform="translate(90 270)"><rect class="card" width="440" height="350" rx="8"/>
+    <text x="30" y="40" class="ey">01 / THE PAUSE</text>
+    <g transform="translate(150 104)"><circle cx="0" cy="48" r="14" fill="url(#mint)"/><circle cx="46" cy="48" r="14" fill="#B8B1FF"/><circle cx="92" cy="48" r="14" fill="url(#mint)"/><rect x="-10" y="86" width="112" height="2" rx="1" fill="#41516B"/></g>
+    <text x="30" y="243" class="word">LEXIS<tspan fill="#8CE4DE">.</tspan></text><text x="30" y="280" class="desc">Три точки как редакционная пауза:</text><text x="30" y="306" class="desc">подумать → проверить → сказать.</text>
+  </g>
+
+  <g transform="translate(580 270)"><rect class="card" width="440" height="350" rx="8"/>
+    <text x="30" y="40" class="ey">02 / ASCENT</text>
+    <g transform="translate(155 112)"><circle cx="0" cy="72" r="14" fill="#8897A9"/><circle cx="47" cy="40" r="14" fill="#B8B1FF"/><circle cx="94" cy="8" r="14" fill="url(#mint)" filter="url(#soft)"/><path d="M-4 104H112" stroke="#405068" stroke-width="2"/></g>
+    <text x="30" y="243" class="word">LEXIS<tspan fill="#8CE4DE">.</tspan></text><text x="30" y="280" class="desc">Материал становится сильнее</text><text x="30" y="306" class="desc">на каждом следующем этапе.</text>
+  </g>
+
+  <g transform="translate(1070 270)"><rect class="card" width="440" height="350" rx="8"/>
+    <text x="30" y="40" class="ey">03 / FOCUS</text>
+    <g transform="translate(220 143)"><circle r="52" stroke="#35445C" stroke-width="2"/><circle r="29" stroke="#6F668F" stroke-width="2"/><circle r="10" fill="url(#mint)" filter="url(#soft)"/><circle cx="-52" cy="0" r="7" fill="#B8B1FF"/><circle cx="52" cy="0" r="7" fill="#B8B1FF"/></g>
+    <text x="30" y="243" class="word">LEXIS<tspan fill="#8CE4DE">.</tspan></text><text x="30" y="280" class="desc">Три точки собирают внимание</text><text x="30" y="306" class="desc">в один ясный редакционный фокус.</text>
+  </g>
+
+  <g transform="translate(335 680)"><rect class="card" width="440" height="350" rx="8"/>
+    <text x="30" y="40" class="ey">04 / TRIAD</text>
+    <g transform="translate(218 126)"><path d="M0 0L58 99H-58Z" stroke="#53657C" stroke-width="2"/><circle cx="0" cy="0" r="13" fill="url(#mint)"/><circle cx="58" cy="99" r="13" fill="#B8B1FF"/><circle cx="-58" cy="99" r="13" fill="url(#mint)"/></g>
+    <text x="30" y="243" class="word">LEXIS<tspan fill="#8CE4DE">.</tspan></text><text x="30" y="280" class="desc">Три опоры качества:</text><text x="30" y="306" class="desc">факты · структура · редактура.</text>
+  </g>
+
+  <g transform="translate(825 680)"><rect class="card" width="440" height="350" rx="8"/>
+    <text x="30" y="40" class="ey">05 / THREE STATES</text>
+    <g transform="translate(154 115)"><circle cx="0" cy="45" r="14" stroke="#8CE4DE" stroke-width="5"/><circle cx="50" cy="45" r="14" fill="#B8B1FF"/><circle cx="100" cy="45" r="14" fill="url(#mint)"/><path d="M0 88H100" stroke="#41516B" stroke-width="2" stroke-dasharray="4 6"/></g>
+    <text x="30" y="243" class="word">LEXIS<tspan fill="#8CE4DE">.</tspan></text><text x="30" y="280" class="desc">Бриф · работа · готово.</text><text x="30" y="306" class="desc">Самый компактный и интерфейсный.</text>
+  </g>
+</svg>
