@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title description">
+  <title id="title">LEXIS — ИИ-конвейер статей для роста сайта</title>
+  <desc id="description">Команда ИИ-агентов для создания SEO-статей сериями.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#07131a"/>
+      <stop offset="1" stop-color="#101a2a"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="75%" cy="34%" r="55%">
+      <stop offset="0" stop-color="#62e6dc" stop-opacity=".34"/>
+      <stop offset="1" stop-color="#62e6dc" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#background)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <g fill="none" stroke="#67e5da" stroke-opacity=".28" stroke-width="2">
+    <path d="M740 127 C940 94 1100 225 1105 390"/>
+    <path d="M690 195 C880 162 1024 270 1037 445"/>
+    <circle cx="947" cy="259" r="125"/>
+    <circle cx="947" cy="259" r="72"/>
+  </g>
+  <circle cx="947" cy="259" r="10" fill="#78f0e5"/>
+  <circle cx="1064" cy="407" r="6" fill="#78f0e5" opacity=".8"/>
+  <text x="90" y="124" fill="#75eee3" font-family="Arial, sans-serif" font-size="32" font-weight="700">LEXIS</text>
+  <text x="90" y="215" fill="#72eadf" font-family="Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="4">КОМАНДА ИИ-АГЕНТОВ ДЛЯ КОНТЕНТА</text>
+  <text x="90" y="310" fill="#ffffff" font-family="Arial, sans-serif" font-size="66" font-weight="700">ИИ-конвейер статей</text>
+  <text x="90" y="386" fill="#ffffff" font-family="Arial, sans-serif" font-size="66" font-weight="700">для роста сайта</text>
+  <text x="90" y="469" fill="#b7c6cf" font-family="Arial, sans-serif" font-size="28">Исследует темы, работает с фактами, пишет и проверяет статьи сериями.</text>
+</svg>
