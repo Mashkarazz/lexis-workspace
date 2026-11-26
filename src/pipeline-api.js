@@ -40,6 +40,31 @@ export const pipelineApi = {
     sessionStorage.setItem("lexis_csrf", csrfToken);
     return body;
   },
+  loginWithLocalTestAccount: async () => {
+    const body = await request("/auth/local-test-login", { method: "POST" });
+    csrfToken = body.csrfToken || "";
+    sessionStorage.setItem("lexis_csrf", csrfToken);
+    return body;
+  },
+  requestPasswordReset: (email) =>
+    request("/auth/password-reset/request", {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    }),
+  confirmPasswordReset: (token, password) =>
+    request("/auth/password-reset/confirm", {
+      method: "POST",
+      body: JSON.stringify({ token, password }),
+    }),
+  register: async ({ name, email, password, company }) => {
+    const body = await request("/auth/register", {
+      method: "POST",
+      body: JSON.stringify({ name, email, password, company }),
+    });
+    csrfToken = body.csrfToken || "";
+    sessionStorage.setItem("lexis_csrf", csrfToken);
+    return body;
+  },
   logout: async () => {
     const body = await request("/auth/logout", { method: "POST" });
     csrfToken = "";
@@ -47,6 +72,11 @@ export const pipelineApi = {
     return body;
   },
   me: () => request("/auth/me"),
+  updateWorkspace: (name) =>
+    request("/workspace", {
+      method: "PATCH",
+      body: JSON.stringify({ name }),
+    }),
   changePassword: (currentPassword, nextPassword) =>
     request("/auth/password", {
       method: "PATCH",
@@ -104,6 +134,11 @@ export const pipelineApi = {
     request("/requests/" + encodeURIComponent(id) + "/preview"),
   listTopics: (params = {}) =>
     request("/content-plan?" + new URLSearchParams(params)),
+  getWorkspaceContentPlan: () => request("/workspace/content-plan"),
+  generateWorkspaceContentPlan: (strategy) =>
+    request("/workspace/content-plan/generate", { method: "POST", body: JSON.stringify({ strategy }) }),
+  updateWorkspacePlanItem: (id, payload) =>
+    request("/workspace/content-plan/items/" + encodeURIComponent(id), { method: "PATCH", body: JSON.stringify(payload) }),
   listQueue: () => request("/queue"),
   addToQueue: (requestIds) =>
     request("/queue", { method: "POST", body: JSON.stringify({ requestIds }) }),

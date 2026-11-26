@@ -13,6 +13,7 @@ import {
   Globe2,
   LayoutDashboard,
   Layers3,
+  LogOut,
   Menu,
   MoreHorizontal,
   PenTool,
@@ -21,6 +22,7 @@ import {
   Search,
   ShieldCheck,
   Sparkles,
+  Users,
   X,
   Zap,
 } from "lucide-react";
@@ -326,7 +328,7 @@ function Landing({ go }) {
       <section className="plans reveal">
         <div>
           <small>04 — ТАРИФЫ И ЛИМИТЫ</small>
-          <h2>
+          <h2 className="queue-production-title">
             Выберите темп
             <br />
             для роста сайта.
@@ -891,6 +893,7 @@ function PublicPage({ kind, go }) {
           </section>
           <section className="pricing-cards reveal" aria-label="Тарифы Askwise">
             {[
+              { id: "explore", name: "Знакомство", price: "Бесплатно", volume: "1 статья без оплаты", text: "Чтобы создать первый материал, пройти весь путь и понять, подходит ли вам Askwise.", points: ["Одна статья от брифа до результата", "Доступ к личному кабинету", "Без привязки карты"] },
               { id: "start", name: "Старт", price: "4 950 ₽", volume: "до 30 статей в месяц", text: "Чтобы запустить регулярный SEO-контент для одного сайта.", points: ["SEO-анализ ниши", "Контент-план и очередь", "Полный цикл ИИ-агентов"] },
               { id: "growth", name: "Рост", price: "12 450 ₽", volume: "до 50 статей в месяц", text: "Для бизнеса, которому нужен стабильный поток материалов.", points: ["Всё из тарифа «Старт»", "Приоритет в очереди", "Статусы и история статей"], featured: true },
               { id: "scale", name: "Масштаб", price: "24 950 ₽", volume: "до 150 статей в месяц", text: "Для команд и агентств, которые ведут несколько направлений.", points: ["Всё из тарифа «Рост»", "Несколько контент-направлений", "Расширенные роли команды"] },
@@ -904,7 +907,7 @@ function PublicPage({ kind, go }) {
                 <p>{plan.text}</p>
                 <ul>{plan.points.map((point) => <li key={point}><Check size={15} />{point}</li>)}</ul>
                 <button className={plan.featured ? "cta" : "ghost"} onClick={() => setSelectedPlan(plan)}>
-                  {plan.custom ? "Обсудить тариф" : "Выбрать тариф"} <ArrowRight size={16} />
+                  {plan.custom ? "Обсудить тариф" : plan.id === "explore" ? "Начать бесплатно" : "Выбрать тариф"} <ArrowRight size={16} />
                 </button>
               </article>
             ))}
@@ -916,10 +919,10 @@ function PublicPage({ kind, go }) {
                 <button className="pricing-dialog-close" onClick={() => setSelectedPlan(null)} aria-label="Закрыть"><X size={18} /></button>
                 <small>ВЫБРАН ТАРИФ</small>
                 <h2 id="plan-dialog-title">{selectedPlan.name}</h2>
-                <p>{selectedPlan.custom ? "Оставьте заявку — подготовим тариф под ваш объём и процессы." : `${selectedPlan.price} в месяц · ${selectedPlan.volume}.`}</p>
-                <div className="payment-preview"><span>ЮKassa</span><b>Карты · СБП</b><em>Подключаем оплату</em></div>
+                <p>{selectedPlan.custom ? "Оставьте заявку — подготовим тариф под ваш объём и процессы." : selectedPlan.id === "explore" ? "Создайте аккаунт и выпустите одну статью без оплаты и без привязки карты." : `${selectedPlan.price} в месяц · ${selectedPlan.volume}.`}</p>
+                {selectedPlan.id !== "explore" && <div className="payment-preview"><span>ЮKassa</span><b>Карты · СБП</b><em>Подключаем оплату</em></div>}
                 <button className="cta" onClick={() => go("signup")}>Продолжить к заявке <ArrowRight /></button>
-                <p className="dialog-note">Сейчас это предварительное оформление: доступ не будет списан автоматически.</p>
+                <p className="dialog-note">{selectedPlan.id === "explore" ? "После первой статьи вы сможете выбрать платный тариф." : "Сейчас это предварительное оформление: доступ не будет списан автоматически."}</p>
               </section>
             </div>
           )}
@@ -1151,7 +1154,10 @@ function AppShell({ go }) {
       pipelineLiveEnabled ? "connecting" : "offline",
     ),
     [lastSync, setLastSync] = useState(null),
-    [notification, setNotification] = useState("");
+    [notification, setNotification] = useState(""),
+    [user, setUser] = useState(null),
+    [workspace, setWorkspace] = useState(null),
+    [profileOpen, setProfileOpen] = useState(false);
   const previousStatuses = useRef(new Map());
   useEffect(() => {
     if (!pipelineLiveEnabled) return;
@@ -1161,9 +1167,10 @@ function AppShell({ go }) {
       if (refreshing) return;
       refreshing = true;
       try {
-        const [data, queueData] = await Promise.all([
+        const [data, queueData, account] = await Promise.all([
           pipelineApi.listRequests({ pageSize: 100 }),
           pipelineApi.listQueue(),
+          pipelineApi.me(),
         ]);
         if (active) {
           const rows = (data.items || []).map(requestRow);
@@ -1191,16 +1198,19 @@ function AppShell({ go }) {
             );
           }
           setQueue(queueData.items || []);
+          setUser(account.user || null);
+          setWorkspace(account.workspace || null);
           setLoadError("");
           setLastSync(new Date());
         }
       } catch (e) {
-        if (active)
-          setLoadError(
-            e.status === 401
-              ? "Сессия истекла. Войдите снова."
-              : "Не удалось обновить данные конвейера.",
-          );
+        if (active) {
+          if (e.status === 401) {
+            go("login");
+            return;
+          }
+          setLoadError("Не удалось обновить данные конвейера.");
+        }
       } finally {
         refreshing = false;
         if (active) setLoading(false);
@@ -1229,7 +1239,7 @@ function AppShell({ go }) {
       unsubscribe();
       clearInterval(fallback);
     };
-  }, []);
+  }, [go]);
   const menu = [
     ["overview", LayoutDashboard, "Обзор"],
     ["requests", FileText, "Заявки"],
@@ -1239,8 +1249,9 @@ function AppShell({ go }) {
     ["agents", Sparkles, "ИИ-агенты"],
     ["reports", BarChart3, "Аналитика"],
     ["subscription", ShieldCheck, "Подписка"],
+    ["workspace", Users, "Компания и команда"],
   ];
-  const addRequest = async (brief) => {
+  const addRequest = async (brief, options = {}) => {
     try {
       const result = pipelineLiveEnabled
         ? await pipelineApi.createRequest(brief)
@@ -1255,8 +1266,10 @@ function AppShell({ go }) {
       const row = requestRow(result.item);
       if (pipelineLiveEnabled) setLiveRequests((x) => [row, ...x]);
       else setRequests((x) => [row, ...x]);
-      setCreate(false);
-      setTab("requests");
+      if (options.navigate !== false) {
+        setCreate(false);
+        setTab("requests");
+      }
       return row;
     } catch (e) {
       throw new Error(e.message || "Не удалось создать заявку.");
@@ -1295,7 +1308,30 @@ function AppShell({ go }) {
     await addRequest(brief);
     setQueue((x) => (x.includes(topic.slug) ? x : [...x, topic.slug]));
   };
+  const addGeneratedPlanItem = async (topic) => {
+    const row = await addRequest({
+      inputType: "planned_topic",
+      title: topic.title,
+      cluster: topic.cluster,
+      materialKind: topic.kind || "guide",
+      goal: topic.intent,
+      knownFacts: "Тема создана в персональном контент-плане Askwise.",
+      forbiddenMentions: "Учитывать ограничения из стратегии компании.",
+      internalLinks: "/",
+    }, { navigate: false });
+    if (pipelineLiveEnabled) {
+      const queueData = await pipelineApi.addToQueue([row.id]);
+      setQueue(queueData.items || []);
+    }
+    return row;
+  };
   const allRequests = pipelineLiveEnabled ? liveRequests : requests;
+  const initials = (user?.name || "Гость").split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
+  const workspaceName = workspace?.name || user?.company || "Рабочее пространство";
+  const logout = async () => {
+    if (pipelineLiveEnabled) await pipelineApi.logout();
+    go("login");
+  };
   const title = create
     ? "Новый материал"
     : selected
@@ -1324,6 +1360,18 @@ function AppShell({ go }) {
           </button>
         ))}
         <div className="nav-bottom">
+          {user && <div className="profile-wrap">
+            <button className="profile-trigger" onClick={() => setProfileOpen((open) => !open)} aria-expanded={profileOpen}>
+              <span className="profile-avatar" aria-hidden="true">{initials}</span>
+              <span><b>{user.name}</b><em>{workspaceName}</em></span>
+            </button>
+            {profileOpen && <div className="profile-menu">
+              <div><b>{user.name}</b><small>{user.email}</small></div>
+              <button onClick={() => { setTab("workspace"); setProfileOpen(false); }}><Users size={14} /> Компания и команда</button>
+              <button onClick={() => { setTab("subscription"); setProfileOpen(false); }}><ShieldCheck size={14} /> Подписка и лимиты</button>
+              <button onClick={logout}><LogOut size={14} /> Выйти</button>
+            </div>}
+          </div>}
           <button>
             <Globe2 size={16} /> Русский
           </button>
@@ -1365,7 +1413,7 @@ function AppShell({ go }) {
         ) : tab === "overview" ? (
           <Overview setTab={setTab} requests={allRequests} loading={loading} />
         ) : tab === "plan" ? (
-          <ContentPlan add={addTopic} queue={queue.map((item) => item.slug)} />
+          <ContentPlan add={addTopic} addGenerated={addGeneratedPlanItem} queue={queue.map((item) => item.slug)} />
         ) : tab === "queue" ? (
           <ProductionQueue
             queue={queue}
@@ -1391,7 +1439,14 @@ function AppShell({ go }) {
         ) : tab === "agents" ? (
           <AgentsBoard requests={allRequests} loading={loading} />
         ) : tab === "subscription" ? (
-          <SubscriptionStatus go={go} createdCount={allRequests.length} />
+          <SubscriptionStatus go={go} createdCount={allRequests.length} user={user} />
+        ) : tab === "workspace" ? (
+          <WorkspaceSettings
+            key={workspace?.id || user?.company || "workspace"}
+            user={user}
+            workspace={workspace}
+            setWorkspace={setWorkspace}
+          />
         ) : (
           <Placeholder tab={tab} setTab={setTab} />
         )}
@@ -1415,15 +1470,89 @@ function AppShell({ go }) {
   );
 }
 
-function SubscriptionStatus({ go, createdCount }) {
-  const [selectedPlan, setSelectedPlan] = useState("growth");
+function WorkspaceSettings({ user, workspace, setWorkspace }) {
+  const [members, setMembers] = useState([]);
+  const [name, setName] = useState(workspace?.name || user?.company || "");
+  const [email, setEmail] = useState("");
+  const [role, setRole] = useState("editor");
+  const [notice, setNotice] = useState("");
+  const [inviteLink, setInviteLink] = useState("");
+  const [busy, setBusy] = useState(false);
+  const isAdmin = user?.role === "admin";
+  useEffect(() => {
+    if (!pipelineLiveEnabled || !isAdmin) return;
+    let active = true;
+    pipelineApi.listTeam().then((data) => { if (active) setMembers(data.items || []); }).catch(() => { if (active) setNotice("Не удалось загрузить состав команды."); });
+    return () => { active = false; };
+  }, [isAdmin]);
+  const saveName = async (event) => {
+    event.preventDefault();
+    if (!name.trim()) return;
+    setBusy(true); setNotice("");
+    try {
+      const result = await pipelineApi.updateWorkspace(name.trim());
+      setWorkspace(result.workspace);
+      setNotice("Название компании сохранено.");
+    } catch (error) { setNotice(error.message || "Не удалось сохранить название."); } finally { setBusy(false); }
+  };
+  const invite = async (event) => {
+    event.preventDefault();
+    if (!email.trim()) return;
+    setBusy(true); setNotice("");
+    try {
+      const result = await pipelineApi.inviteTeamMember(email.trim(), role);
+      setEmail("");
+      setInviteLink(`${window.location.origin}${window.location.pathname}#invite/${encodeURIComponent(result.invitation.token)}`);
+      setNotice(`Приглашение для ${result.invitation.email} готово. Передайте участнику ссылку ниже.`);
+    } catch (error) { setNotice(error.message || "Не удалось создать приглашение."); } finally { setBusy(false); }
+  };
+  const roleLabel = { admin: "Администратор", editor: "Редактор", publisher: "Публикатор", viewer: "Наблюдатель" };
+  return (
+    <section className="workspace-settings reveal shown">
+      <header className="workspace-settings-head">
+        <div><small>КОМПАНИЯ И ДОСТУПЫ</small><h2>Ваше рабочее<br /><em>пространство.</em></h2></div>
+        <span className="workspace-isolated"><ShieldCheck size={15} /> Изолированные данные</span>
+      </header>
+      <div className="workspace-settings-intro"><p>Данные, материалы, очередь и контент‑план доступны только участникам этой компании.</p></div>
+      {notice && <p className="workspace-settings-notice" role="status">{notice}</p>}
+      <div className="workspace-settings-grid">
+        <article className="workspace-card company-card">
+          <small>ТЕКУЩАЯ КОМПАНИЯ</small><h3>{workspace?.name || user?.company || "Рабочее пространство"}</h3>
+          <p>Создано для {user?.name || "вашего аккаунта"}. Здесь не смешиваются заявки, планы и очередь других компаний.</p>
+          {isAdmin ? <form onSubmit={saveName} className="workspace-form"><label>Название компании<input value={name} maxLength={120} onChange={(event) => setName(event.target.value)} placeholder="Например, Askwise Studio" /></label><button className="ghost" disabled={busy}><span>Сохранить название</span><ArrowRight size={15} /></button></form> : <p className="workspace-access-note">Название компании может изменить администратор пространства.</p>}
+        </article>
+        <article className="workspace-card access-card">
+          <small>ВАШ ДОСТУП</small><div className="workspace-user"><span>{(user?.name || "Г").slice(0, 1).toUpperCase()}</span><div><b>{user?.name}</b><em>{roleLabel[user?.role] || "Участник"}</em></div></div>
+          <ul><li><Check size={14} /> Видит только материалы этой компании</li><li><Check size={14} /> Очередь и контент‑план общие для команды</li><li><Check size={14} /> Доступы регулирует администратор</li></ul>
+        </article>
+        <article className="workspace-card team-card">
+          <div className="workspace-card-title"><div><small>КОМАНДА</small><h3>{isAdmin ? `${members.length || 1} участник${(members.length || 1) === 1 ? "" : "а"}` : "Участники пространства"}</h3></div><Users size={19} /></div>
+          {isAdmin ? <><div className="member-list">{members.map((member) => <div key={member.id}><span>{member.name.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase()}</span><p><b>{member.name}</b><em>{roleLabel[member.role] || member.role} · {member.email}</em></p></div>)}</div><form onSubmit={invite} className="invite-form"><input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="name@company.ru" aria-label="E-mail участника" /><select value={role} onChange={(event) => setRole(event.target.value)} aria-label="Роль участника"><option value="editor">Редактор</option><option value="publisher">Публикатор</option><option value="viewer">Наблюдатель</option></select><button className="cta" disabled={busy}>Пригласить</button></form>{inviteLink && <label className="invite-link"><span>Ссылка-приглашение · действует 7 дней</span><input readOnly value={inviteLink} onFocus={(event) => event.currentTarget.select()} /></label>}</> : <p>Состав команды отображается у администратора. Обратитесь к нему, если нужно изменить вашу роль.</p>}
+        </article>
+      </div>
+    </section>
+  );
+}
+
+function InvitationAcceptance({ token, go }) {
+  const [name, setName] = useState(""), [password, setPassword] = useState(""), [error, setError] = useState(""), [busy, setBusy] = useState(false);
+  const submit = async (event) => {
+    event.preventDefault(); setBusy(true); setError("");
+    try { await pipelineApi.acceptInvitation(token, name, password); go("login"); } catch (reason) { setError(reason.message || "Не удалось принять приглашение."); } finally { setBusy(false); }
+  };
+  return <main className="auth-page invitation-page"><div className="auth-top"><Logo go={go} /><small>ПРИГЛАШЕНИЕ В КОМАНДУ</small></div><section className="auth-card"><small>ASKWISE / WORKSPACE</small><h1>Присоединиться<br /><em>к компании.</em></h1><p>После создания пароля вы получите доступ только к материалам и очереди этой команды.</p><form onSubmit={submit}><label>Ваше имя<input required value={name} onChange={(event) => setName(event.target.value)} /></label><label>Пароль<input required minLength={12} type="password" value={password} onChange={(event) => setPassword(event.target.value)} /><small>Не менее 12 символов</small></label>{error && <p className="auth-error">{error}</p>}<button className="cta" disabled={busy}>Присоединиться <ArrowRight /></button></form></section></main>;
+}
+
+function SubscriptionStatus({ go, createdCount, user }) {
+  const [selectedPlan, setSelectedPlan] = useState(user?.accessPlan || "explore");
   const plans = {
+    explore: { name: "Знакомство", limit: 1, price: "Бесплатно", description: "Одна статья, чтобы пройти путь материала и оценить Askwise." },
     start: { name: "Старт", limit: 30, price: "4 950 ₽", description: "Для одного сайта и первого регулярного потока." },
     growth: { name: "Рост", limit: 50, price: "12 450 ₽", description: "Для стабильного выпуска материалов каждый месяц." },
     scale: { name: "Масштаб", limit: 150, price: "24 950 ₽", description: "Для нескольких направлений и большой редакционной нагрузки." },
   };
   const plan = plans[selectedPlan];
-  const used = Math.min(plan.limit, 18 + createdCount);
+  const used = Math.min(plan.limit, selectedPlan === "explore" ? createdCount : 18 + createdCount);
   const remaining = Math.max(0, plan.limit - used);
   const progress = Math.round((used / plan.limit) * 100);
   return (
@@ -1436,19 +1565,19 @@ function SubscriptionStatus({ go, createdCount }) {
           </h2>
           <p>Здесь будет видно, сколько статей доступно в текущем периоде, когда нужно продлить доступ и какой тариф выбран.</p>
         </div>
-        <span className="subscription-draft">ДЕМО-ИНТЕРФЕЙС</span>
+        <span className="subscription-draft">{plan.name === "Знакомство" ? "БЕСПЛАТНЫЙ ДОСТУП" : "ВЫБРАННЫЙ ТАРИФ"}</span>
       </div>
       <section className="subscription-notice">
         <ShieldCheck size={18} />
-        <p><b>Оплата и лимиты пока не подключены.</b> Значения ниже показывают будущую логику кабинета и не ограничивают создание материалов в текущей beta-версии.</p>
+        <p><b>Тариф «Знакомство» включает одну статью.</b> После неё вы сможете продолжить работу на подходящем платном тарифе. Оплата подключится отдельным безопасным этапом.</p>
       </section>
       <div className="subscription-grid">
         <article className="subscription-card plan-card">
           <small>ТЕКУЩИЙ ТАРИФ</small>
           <div className="plan-card-title"><b>{plan.name}</b><span>{plan.price} / месяц</span></div>
           <p>{plan.description}</p>
-          <div className="period-line"><span><i /> Расчётный период</span><b>01–30 ноября</b></div>
-          <div className="period-line"><span><i /> Следующее продление</span><b>30 ноября 2026</b></div>
+          <div className="period-line"><span><i /> Доступно сейчас</span><b>{plan.limit} {plan.limit === 1 ? "статья" : "статей"}</b></div>
+          <div className="period-line"><span><i /> Следующий шаг</span><b>{plan.name === "Знакомство" ? "Выбрать тариф после первой статьи" : "Продлить доступ"}</b></div>
           <button className="ghost" onClick={() => go("pricing")}>Посмотреть все тарифы <ArrowRight size={15} /></button>
         </article>
         <article className="subscription-card usage-card">
@@ -1456,11 +1585,11 @@ function SubscriptionStatus({ go, createdCount }) {
           <div className="usage-numbers"><b>{used}</b><span>из {plan.limit}</span><em>{remaining} осталось</em></div>
           <div className="usage-meter" aria-label={`Использовано ${used} из ${plan.limit} статей`}><i style={{ width: `${progress}%` }} /></div>
           <div className="usage-caption"><span>Использовано {progress}%</span><span>Лимит обновится после продления</span></div>
-          <p>В будущем лимит будет проверяться перед запуском новой статьи, а остаток и история периодов будут рассчитываться по подтверждённым платежам.</p>
+          <p>Лимит «Знакомства» проверяется перед созданием материала. После подключения оплаты лимиты тарифов будут активироваться по подтверждённым платежам.</p>
         </article>
       </div>
       <section className="subscription-plans" aria-label="Демонстрация выбора тарифа">
-        <div><small>СЦЕНАРИЙ ВЫБОРА</small><h3>Выберите объём на следующий месяц.</h3></div>
+        <div><small>ТАРИФЫ</small><h3>Начните с одной статьи или выберите объём.</h3></div>
         <div className="subscription-plan-options">
           {Object.entries(plans).map(([id, item]) => <button key={id} className={selectedPlan === id ? "selected" : ""} onClick={() => setSelectedPlan(id)}><span><b>{item.name}</b><em>{item.limit} статей / месяц</em></span><strong>{item.price}</strong>{selectedPlan === id && <Check size={17} />}</button>)}
         </div>
@@ -1986,7 +2115,64 @@ function NewMaterial({ cancel, submit }) {
     </section>
   );
 }
-function ContentPlan({ add, queue }) {
+function ContentPlan({ addGenerated }) {
+  const limit = 50;
+  const [plan, setPlan] = useState(null), [loading, setLoading] = useState(pipelineLiveEnabled), [mode, setMode] = useState("view"), [step, setStep] = useState(0), [saving, setSaving] = useState(false), [error, setError] = useState(""), [adding, setAdding] = useState("");
+  const [form, setForm] = useState({ website: "", company: "", products: "", audience: "", goals: [], tone: "Экспертно и спокойно", restrictions: "", articleCount: 12 });
+  useEffect(() => {
+    if (!pipelineLiveEnabled) return;
+    pipelineApi.getWorkspaceContentPlan().then((data) => {
+      const item = data.item; setPlan(item); if (item.strategy) setForm(item.strategy);
+    }).catch((e) => setError(e.message || "Не удалось загрузить контент-план.")).finally(() => setLoading(false));
+  }, []);
+  const steps = [
+    ["О компании", "Расскажите, чем занимается компания и какой сайт развиваем.", ["company", "products", "website"]],
+    ["Аудитория", "Кому должен помогать контент и на чьи вопросы отвечать?", ["audience"]],
+    ["Цель контента", "Выберите задачи, которые должен поддерживать контент-поток.", ["goals"]],
+    ["Редакционные рамки", "Тональность и ограничения помогут сохранить голос бренда.", ["tone", "restrictions"]],
+    ["Объём плана", "Количество тем можно менять в пределах вашего тарифа.", ["articleCount"]],
+  ];
+  const update = (key, value) => setForm((current) => ({ ...current, [key]: value }));
+  const generate = async () => {
+    setSaving(true); setError("");
+    try { const data = await pipelineApi.generateWorkspaceContentPlan(form); setPlan(data.item); setMode("view"); }
+    catch (e) { setError(e.message || "Не удалось собрать контент-план."); }
+    finally { setSaving(false); }
+  };
+  const queueItem = async (item) => {
+    setAdding(item.id); setError("");
+    try { await addGenerated(item); const data = await pipelineApi.updateWorkspacePlanItem(item.id, { status: "queued" }); setPlan((current) => ({ ...current, items: current.items.map((entry) => entry.id === item.id ? data.item : entry) })); }
+    catch (e) { setError(e.message || "Не удалось добавить тему в очередь."); }
+    finally { setAdding(""); }
+  };
+  if (loading) return <section className="plan-loading">Загружаем контент-план…</section>;
+  if (!pipelineLiveEnabled) return <LegacyContentPlan add={() => {}} queue={[]} />;
+  const hasPlan = plan?.items?.length;
+  const current = steps[step];
+  if (mode === "setup") return <section className="plan-builder reveal shown">
+    <button className="back-link" onClick={() => setMode("view")}> <ChevronLeft /> {hasPlan ? "Вернуться к плану" : "К контент-плану"}</button>
+    <div className="builder-progress"><i style={{ width: `${((step + 1) / steps.length) * 100}%` }} /></div>
+    <small>СТРАТЕГИЯ КОНТЕНТ-ПОТОКА · {String(step + 1).padStart(2, "0")} / {String(steps.length).padStart(2, "0")}</small>
+    <h2>{current[0]}</h2><p>{current[1]}</p>
+    {step === 0 && <div className="builder-fields">
+      <label>Компания или продукт<textarea value={form.company} onChange={(e) => update("company", e.target.value)} placeholder="Например: Askwise — сервис для контент-команд" /></label>
+      <label>Продукты и услуги<textarea value={form.products} onChange={(e) => update("products", e.target.value)} placeholder="Что предлагаете клиентам?" /></label>
+      <label>Сайт <input value={form.website} onChange={(e) => update("website", e.target.value)} placeholder="https://example.ru" /></label>
+    </div>}
+    {step === 1 && <label className="builder-single">Аудитория<textarea value={form.audience} onChange={(e) => update("audience", e.target.value)} placeholder="Кто читатель, какую задачу он решает, что уже знает?" /></label>}
+    {step === 2 && <div className="goal-options">{[["seo", "SEO-трафик"], ["leads", "Лиды и заявки"], ["trust", "Доверие к экспертизе"], ["enablement", "Поддержка продаж"]].map(([id, label]) => <button key={id} className={form.goals.includes(id) ? "picked" : ""} onClick={() => update("goals", form.goals.includes(id) ? form.goals.filter((value) => value !== id) : [...form.goals, id])}><Check size={16} />{label}</button>)}</div>}
+    {step === 3 && <div className="builder-fields"><label>Тональность<select value={form.tone} onChange={(e) => update("tone", e.target.value)}><option>Экспертно и спокойно</option><option>Деловой стиль</option><option>Дружелюбно и доступно</option></select></label><label>Ограничения<textarea value={form.restrictions} onChange={(e) => update("restrictions", e.target.value)} placeholder="Стоп-темы, обязательные формулировки, правила бренда" /></label></div>}
+    {step === 4 && <div className="volume-picker"><small>ДОСТУПНО ПО ТАРИФУ: ДО {limit} СТАТЕЙ</small><div><button onClick={() => update("articleCount", Math.max(1, form.articleCount - 1))}>−</button><b>{form.articleCount}</b><button onClick={() => update("articleCount", Math.min(limit, form.articleCount + 1))}>+</button></div><p>План — это черновик тем. Лимит расходуется, когда тема становится заявкой и отправляется в работу.</p></div>}
+    {error && <p className="form-error">{error}</p>}
+    <div className="form-actions"><button className="ghost" onClick={() => step ? setStep(step - 1) : setMode("view")}>{step ? "Назад" : "Отмена"}</button><button className="cta" disabled={saving || (step === 0 && (!form.company.trim() || !form.products.trim())) || (step === 1 && !form.audience.trim()) || (step === 2 && !form.goals.length)} onClick={() => step === steps.length - 1 ? generate() : setStep(step + 1)}>{saving ? "Собираем план…" : step === steps.length - 1 ? "Сгенерировать план" : "Продолжить"} <ArrowRight /></button></div>
+  </section>;
+  if (!hasPlan) return <section className="plan-empty reveal shown"><small>КОНТЕНТ-СТРАТЕГИЯ</small><h2>Соберите первый<br /><em>контент-план.</em></h2><p>Расскажите о продукте и аудитории. Askwise подготовит структуру тем, распределит их по кластерам и предложит порядок выпуска.</p><div className="plan-empty-meta"><span>До {limit} статей</span><span>Редактируемый черновик</span><span>Без автозапуска</span></div>{error && <p className="form-error">{error}</p>}<button className="cta" onClick={() => { setStep(0); setMode("setup"); }}>Создать контент-план <ArrowRight /></button></section>;
+  const queued = plan.items.filter((item) => item.status === "queued").length;
+  const generationNote = plan.source === "ai-web-research" ? "План собран AI с исследованием сайта и открытого поискового контекста. Перед запуском проверьте формулировки тем." : "Локальный генератор использовал сведения из брифа. Подключите AI-модель, чтобы добавить исследование сайта и поискового контекста.";
+  return <section className="generated-plan reveal shown"><div className="generated-plan-head"><div><small>ПЕРСОНАЛЬНЫЙ КОНТЕНТ-ПЛАН</small><h2>{plan.items.length} тем для<br /><em>{form.company}.</em></h2><p>Создан {new Date(plan.generatedAt).toLocaleDateString("ru-RU")} · {generationNote}</p></div><button className="ghost" onClick={() => { setStep(0); setMode("setup"); }}>Настроить стратегию</button></div><div className="plan-usage"><b>{plan.items.length} <span>запланировано</span></b><b>{queued} <span>в очереди</span></b><b>{plan.limit - queued} <span>доступно в тарифе</span></b></div>{error && <p className="form-error">{error}</p>}<div className="generated-plan-list">{plan.items.map((item, index) => <article key={item.id}><span className="plan-order">{String(index + 1).padStart(2, "0")}</span><div><small>{item.cluster} · ВОЛНА {item.wave}</small><h3>{item.title}</h3><p>{item.intent}</p></div><span className={"plan-item-status " + item.status}>{item.status === "queued" ? "В ОЧЕРЕДИ" : "ДОСТУПНА"}</span><button className="ghost" disabled={item.status === "queued" || adding === item.id} onClick={() => queueItem(item)}>{adding === item.id ? "Добавляем…" : item.status === "queued" ? "Добавлена" : "В очередь"} <ArrowRight size={15} /></button></article>)}</div></section>;
+}
+
+function LegacyContentPlan({ add, queue }) {
   const [q, setQ] = useState(""),
     [wave, setWave] = useState("all"),
     [selected, setSelected] = useState([]),
@@ -2172,7 +2358,7 @@ function ProductionQueue({ queue, refreshQueue }) {
       <div className="queue-intro">
         <div>
           <small>ПОСЛЕДОВАТЕЛЬНЫЙ ПРОГОН</small>
-          <h2>
+          <h2 className="queue-production-title">
             Очередь
             <br />
             <em>производства.</em>
@@ -2193,7 +2379,7 @@ function ProductionQueue({ queue, refreshQueue }) {
           <i /> Ручное управление включено
         </span>
         <button
-          className="ghost"
+          className="ghost queue-run-next"
           disabled={
             !shown.some((item) => item.status === "pending") || Boolean(busy)
           }
@@ -2239,6 +2425,7 @@ function ProductionQueue({ queue, refreshQueue }) {
               <div className="queue-actions">
                 {item.status === "pending" && (
                   <button
+                    className="queue-pause"
                     disabled={Boolean(busy)}
                     onClick={() =>
                       act("pause-" + item.requestId, () =>
@@ -2254,6 +2441,7 @@ function ProductionQueue({ queue, refreshQueue }) {
                 )}
                 {item.status === "blocked" && (
                   <button
+                    className="queue-resume"
                     disabled={Boolean(busy)}
                     onClick={() =>
                       act("resume-" + item.requestId, () =>
@@ -2269,6 +2457,7 @@ function ProductionQueue({ queue, refreshQueue }) {
                 )}
                 {item.status !== "running" && item.status !== "done" && (
                   <button
+                    className="queue-remove"
                     disabled={Boolean(busy)}
                     onClick={() =>
                       act("remove-" + item.requestId, () =>
@@ -2321,7 +2510,7 @@ function Requests({ created, create, open, loading, error }) {
             placeholder="Найти заявку"
           />
         </div>
-        <button className="ghost">
+        <button className="ghost filter-trigger">
           <Filter size={15} /> Фильтры
         </button>
         <button className="cta" onClick={create}>
@@ -2436,7 +2625,6 @@ function PublicationTracker({ requests, loading, apiError }) {
       return () => {
         active = false;
       };
-    setLoadingReports(true);
     Promise.all(
       published.map(async (row) => {
         try {
@@ -2459,7 +2647,7 @@ function PublicationTracker({ requests, loading, apiError }) {
     return () => {
       active = false;
     };
-  }, [publishedKey]);
+  }, [publishedKey, published]);
   const shown = published;
   return (
     <section className="publications-page reveal shown">
@@ -2732,9 +2920,6 @@ function RequestDetail({ request, back }) {
           </div>
         </div>
         <div className="detail-actions">
-          <button className="ghost" aria-label="Дополнительные действия">
-            <MoreHorizontal size={18} />
-          </button>
           <button
             className="cta"
             disabled={!canRun || running}
@@ -2744,7 +2929,7 @@ function RequestDetail({ request, back }) {
           </button>
           {pipelineLiveEnabled && canRun && (
             <button
-              className="ghost"
+              className="ghost detail-secondary-action"
               disabled={runningAll || running}
               onClick={runAll}
             >
@@ -2758,7 +2943,7 @@ function RequestDetail({ request, back }) {
           )}
           {pipelineLiveEnabled && artifacts?.draft && (
             <button
-              className="ghost"
+              className="ghost detail-secondary-action"
               disabled={previewLoading}
               onClick={openPreview}
             >
@@ -2767,7 +2952,7 @@ function RequestDetail({ request, back }) {
           )}
           {pipelineLiveEnabled && revisionOwners.length > 0 && (
             <button
-              className="ghost"
+              className="ghost detail-secondary-action"
               onClick={() => {
                 setRevisionOwner(revisionOwners[0]);
                 setRevisionOpen(true);
@@ -2932,7 +3117,7 @@ function RequestOverview({ setView, request, artifacts }) {
         <small>СЛЕДУЮЩИЙ ШАГ</small>
         <h3>{nextStep.title}</h3>
         <p>{nextStep.description}</p>
-        <button className="ghost" onClick={() => setView(nextStep.tab)}>
+        <button className="text-button detail-open-stage" onClick={() => setView(nextStep.tab)}>
           Открыть этап <ArrowRight size={14} />
         </button>
       </section>
@@ -4778,7 +4963,7 @@ function Reports() {
       <div className="report-head">
         <div>
           <small>PIPELINE OBSERVABILITY</small>
-          <h2>
+          <h2 className="report-production-title">
             Состояние
             <br />
             <em>производства.</em>
@@ -4815,7 +5000,7 @@ function Reports() {
               </span>
             </article>
           </div>
-          <section className="report-panel">
+          <section className="report-panel report-status-panel">
             <div className="panel-head">
               <div>
                 <small>РАСПРЕДЕЛЕНИЕ СТАТУСОВ</small>
@@ -4903,7 +5088,10 @@ function Auth({ mode, go }) {
       company: "",
     }),
     [loading, setLoading] = useState(false),
-    [error, setError] = useState("");
+    [error, setError] = useState(""),
+    [forgotPassword, setForgotPassword] = useState(false),
+    [recoveryEmail, setRecoveryEmail] = useState(""),
+    [recoveryNotice, setRecoveryNotice] = useState("");
   const field =
     signup && step === 0
       ? ["name", "Как вас зовут?", "Например: Мария"]
@@ -4920,7 +5108,7 @@ function Auth({ mode, go }) {
             : [
                 "password",
                 signup ? "Создайте пароль" : "С возвращением.",
-                "Не менее 8 символов",
+                "Не менее 12 символов",
               ];
   const final = signup ? step === 3 : step === 1;
   const continueAuth = async () => {
@@ -4928,20 +5116,52 @@ function Auth({ mode, go }) {
       setStep((x) => x + 1);
       return;
     }
-    if (signup || !pipelineLiveEnabled) {
+    if (!pipelineLiveEnabled) {
       go(signup ? "onboarding" : "app");
       return;
     }
     setLoading(true);
     setError("");
     try {
-      await pipelineApi.login(data.email, data.password);
-      go("app");
+      if (signup) {
+        await pipelineApi.register(data);
+        go("onboarding");
+      } else {
+        await pipelineApi.login(data.email, data.password);
+        go("app");
+      }
     } catch (e) {
       setError(
         e.message ||
           "Не удалось войти. Проверьте данные и подключение к локальному API.",
       );
+    } finally {
+      setLoading(false);
+    }
+  };
+  const useLocalTestAccount = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      await pipelineApi.loginWithLocalTestAccount();
+      go("app");
+    } catch (reason) {
+      setError(reason.message || "Не удалось открыть локальный тестовый кабинет.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  const requestPasswordReset = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const result = await pipelineApi.requestPasswordReset(recoveryEmail);
+      setRecoveryNotice(result.resetUrl
+        ? "Ссылка подготовлена. Откройте её, чтобы задать новый пароль."
+        : result.message || "Если аккаунт существует, ссылка для смены пароля уже отправлена.");
+      if (result.resetUrl) window.location.hash = result.resetUrl.split("#")[1];
+    } catch (reason) {
+      setError(reason.message || "Не удалось запросить смену пароля.");
     } finally {
       setLoading(false);
     }
@@ -4962,7 +5182,7 @@ function Auth({ mode, go }) {
         <h1>{field[1]}</h1>
         <p>
           {signup
-            ? "Несколько ответов — и ваша редакционная система будет готова к первой заявке."
+            ? "Создайте аккаунт: тариф «Знакомство» даст одну статью, чтобы пройти путь материала и оценить Askwise."
             : pipelineLiveEnabled
               ? "Войдите в защищённое локальное пространство Askwise."
               : "Войдите, чтобы посмотреть демонстрацию рабочего пространства."}
@@ -4979,55 +5199,83 @@ function Auth({ mode, go }) {
             ))}
           </div>
         )}
-        <label>
-          <span>
-            {field[0] === "password"
-              ? "Пароль"
-              : field[0] === "email"
-                ? "Email"
-                : field[0] === "company"
-                  ? "Команда"
-                  : "Имя"}
-          </span>
-          <input
-            autoFocus
-            autoComplete={
-              field[0] === "password"
-                ? "current-password"
-                : field[0] === "email"
-                  ? "email"
-                  : "off"
-            }
-            type={field[0] === "password" ? "password" : "text"}
-            value={data[field[0]]}
-            onChange={(e) => {
-              setError("");
-              setData((x) => ({ ...x, [field[0]]: e.target.value }));
-            }}
-            placeholder={field[2]}
-          />
-        </label>
-        {error && (
-          <p className="auth-error" role="alert">
-            {error}
-          </p>
-        )}
-        <button
-          className="cta wide"
-          disabled={!data[field[0]].trim() || loading}
-          onClick={continueAuth}
-        >
-          {loading
-            ? "Проверяем доступ…"
-            : final
-              ? signup
-                ? "Создать пространство"
-                : "Продолжить"
-              : "Продолжить"}{" "}
-          <ArrowRight />
-        </button>
-        {!signup && pipelineLiveEnabled && (
-          <button className="auth-text">Не помню пароль</button>
+        {forgotPassword ? (
+          <div className="auth-recovery" role="status">
+            <strong>Восстановление пароля</strong>
+            <p>
+              Укажите e-mail. Если аккаунт существует, мы подготовим ссылку для
+              безопасной смены пароля.
+            </p>
+            <label>
+              <span>Email</span>
+              <input type="email" autoComplete="email" value={recoveryEmail} onChange={(event) => { setRecoveryEmail(event.target.value); setError(""); }} placeholder="name@company.com" />
+            </label>
+            <button className="cta wide" disabled={!recoveryEmail.trim() || loading} onClick={requestPasswordReset}>
+              {loading ? "Готовим ссылку…" : "Восстановить пароль"} <ArrowRight />
+            </button>
+            {recoveryNotice && <p className="auth-notice">{recoveryNotice}</p>}
+            {error && <p className="auth-error" role="alert">{error}</p>}
+            <p className="auth-recovery-hint">Локальная проверка: можно также открыть изолированный кабинет без показа реквизитов.</p>
+            <button className="auth-text" disabled={loading} onClick={useLocalTestAccount}>Открыть тестовый кабинет</button>
+            <button className="auth-text" onClick={() => setForgotPassword(false)}>
+              Вернуться ко входу
+            </button>
+          </div>
+        ) : (
+          <>
+            <label>
+              <span>
+                {field[0] === "password"
+                  ? "Пароль"
+                  : field[0] === "email"
+                    ? "Email"
+                    : field[0] === "company"
+                      ? "Команда"
+                      : "Имя"}
+              </span>
+              <input
+                autoFocus
+                autoComplete={
+                  field[0] === "password"
+                    ? "current-password"
+                    : field[0] === "email"
+                      ? "email"
+                      : "off"
+                }
+                type={field[0] === "password" ? "password" : "text"}
+                value={data[field[0]]}
+                onChange={(e) => {
+                  setError("");
+                  setData((x) => ({ ...x, [field[0]]: e.target.value }));
+                }}
+                placeholder={field[2]}
+              />
+            </label>
+            {error && (
+              <p className="auth-error" role="alert">
+                {error}
+              </p>
+            )}
+            <button
+              className="cta wide"
+              disabled={!data[field[0]].trim() || loading}
+              onClick={continueAuth}
+            >
+              {loading
+                ? "Проверяем доступ…"
+                : final
+                  ? signup
+                    ? "Создать пространство"
+                    : "Продолжить"
+                  : "Продолжить"}{" "}
+              <ArrowRight />
+            </button>
+            {!signup && pipelineLiveEnabled && (
+              <button className="auth-text" onClick={() => setForgotPassword(true)}>
+                Не помню пароль
+              </button>
+            )}
+          </>
         )}
         <div className="auth-switch">
           {signup ? "Уже есть аккаунт?" : "Впервые в Askwise?"}{" "}
@@ -5038,6 +5286,29 @@ function Auth({ mode, go }) {
       </section>
     </main>
   );
+}
+function PasswordReset({ token, go }) {
+  const [password, setPassword] = useState("");
+  const [confirmation, setConfirmation] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [complete, setComplete] = useState(false);
+  const submit = async (event) => {
+    event.preventDefault();
+    if (password.length < 12) return setError("Пароль должен содержать не менее 12 символов.");
+    if (password !== confirmation) return setError("Пароли не совпадают.");
+    setLoading(true);
+    setError("");
+    try {
+      await pipelineApi.confirmPasswordReset(token, password);
+      setComplete(true);
+    } catch (reason) {
+      setError(reason.message || "Не удалось изменить пароль.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  return <main className="auth-page"><div className="auth-top"><Logo go={go} /><button onClick={() => go("login")}>← Ко входу</button></div><section className="auth-card"><div className="auth-orbit"><i /><i /><b>⌁</b></div><small>ASKWISE ACCOUNT</small><h1>{complete ? "Пароль обновлён." : "Задайте новый пароль."}</h1>{complete ? <><p>Все активные сессии завершены для безопасности. Войдите с новым паролем.</p><button className="cta wide" onClick={() => go("login")}>Перейти ко входу <ArrowRight /></button></> : <form onSubmit={submit}><p>Придумайте пароль длиной не менее 12 символов.</p><label><span>Новый пароль</span><input required minLength={12} autoFocus type="password" autoComplete="new-password" value={password} onChange={(event) => setPassword(event.target.value)} /></label><label><span>Повторите пароль</span><input required minLength={12} type="password" autoComplete="new-password" value={confirmation} onChange={(event) => setConfirmation(event.target.value)} /></label>{error && <p className="auth-error" role="alert">{error}</p>}<button className="cta wide" disabled={loading}>{loading ? "Сохраняем пароль…" : "Сохранить новый пароль"} <ArrowRight /></button></form>}</section></main>;
 }
 function Onboarding({ go }) {
   const [step, setStep] = useState(0);
@@ -5119,12 +5390,13 @@ export default function App() {
       "home", "product", "how", "quality", "pricing", "journal",
       "login", "signup", "onboarding", "app", "privacy", "terms", "payments",
     ];
-    return knownPublicPages.includes(hash) || /^journal\/\d+$/.test(hash)
+    return knownPublicPages.includes(hash) || /^journal\/\d+$/.test(hash) || /^invite\/.+/.test(hash) || /^reset-password\/.+/.test(hash)
       ? hash
       : "home";
   };
   const [page, setPage] = useState(resolveHashPage),
-    [menu, setMenu] = useState(false);
+    [menu, setMenu] = useState(false),
+    [accessChecked, setAccessChecked] = useState(!pipelineLiveEnabled);
   useEffect(() => {
     const onScroll = () =>
       document.querySelectorAll(".reveal").forEach((el) => {
@@ -5136,19 +5408,36 @@ export default function App() {
     return () => removeEventListener("scroll", onScroll);
   }, [page]);
   useEffect(() => {
-    const onHashChange = () => setPage(resolveHashPage());
+    const onHashChange = () => {
+      const nextPage = resolveHashPage();
+      if (pipelineLiveEnabled && nextPage === "app") setAccessChecked(false);
+      setPage(nextPage);
+    };
     addEventListener("hashchange", onHashChange);
     return () => removeEventListener("hashchange", onHashChange);
   }, []);
   const go = (x) => {
     if (window.location.hash.slice(1) !== x) window.location.hash = x;
+    if (pipelineLiveEnabled && x === "app") setAccessChecked(false);
     setPage(x);
     setMenu(false);
     scrollTo({ top: 0, behavior: "smooth" });
   };
-  if (page === "app") return <AppShell go={go} />;
+  useEffect(() => {
+    if (!pipelineLiveEnabled || page !== "app" || accessChecked) return;
+    let active = true;
+    pipelineApi.me()
+      .catch(() => { if (active) go("login"); })
+      .finally(() => { if (active) setAccessChecked(true); });
+    return () => { active = false; };
+  }, [page, accessChecked]);
+  if (page === "app") return (!pipelineLiveEnabled || accessChecked) ? <AppShell go={go} /> : <main className="auth-page" />;
   if (page === "login" || page === "signup")
     return <Auth mode={page} go={go} />;
+  const invitation = page.match(/^invite\/(.+)$/);
+  if (invitation) return <InvitationAcceptance token={invitation[1]} go={go} />;
+  const passwordReset = page.match(/^reset-password\/(.+)$/);
+  if (passwordReset) return <PasswordReset token={passwordReset[1]} go={go} />;
   if (page === "onboarding") return <Onboarding go={go} />;
   if (legalPages[page]) return <LegalPage kind={page} go={go} />;
   const articleMatch = page.match(/^journal\/(\d+)$/);
